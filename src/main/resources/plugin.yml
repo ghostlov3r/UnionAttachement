@@ -1,0 +1,7 @@
+name: UnionAttachment
+main: dev.ghostlov3r.unionatt.UnionAttachment
+version: '0.0.1'
+api:
+  - '1.0.0'
+depend:
+  - LordCore
