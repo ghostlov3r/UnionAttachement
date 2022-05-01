@@ -1,17 +1,17 @@
 package dev.ghostlov3r.unionatt;
 
-import dev.ghostlov3r.beengine.Server;
-import dev.ghostlov3r.beengine.event.EventListener;
-import dev.ghostlov3r.beengine.event.EventManager;
-import dev.ghostlov3r.beengine.event.player.PlayerPreLoginEvent;
-import dev.ghostlov3r.beengine.permission.BanEntry;
-import dev.ghostlov3r.beengine.plugin.AbstractPlugin;
-import dev.ghostlov3r.beengine.scheduler.AsyncTask;
-import dev.ghostlov3r.beengine.scheduler.Scheduler;
-import dev.ghostlov3r.beengine.utils.config.Config;
-import dev.ghostlov3r.minecraft.LoginSuccessor;
-import dev.ghostlov3r.minecraft.MinecraftSession;
-import dev.ghostlov3r.nbt.NbtMap;
+import beengine.Server;
+import beengine.event.EventListener;
+import beengine.event.EventManager;
+import beengine.event.player.PlayerPreLoginEvent;
+import beengine.minecraft.LoginSuccessor;
+import beengine.minecraft.MinecraftSession;
+import beengine.nbt.NbtMap;
+import beengine.permission.BanEntry;
+import beengine.plugin.AbstractPlugin;
+import beengine.scheduler.AsyncTask;
+import beengine.scheduler.Scheduler;
+import beengine.util.config.Config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -71,7 +71,17 @@ public class UnionAttachment extends AbstractPlugin<Config> implements EventList
 	@Override
 	protected void onEnable() {
 		EventManager.get().register(this, this);
-		Scheduler.delayedRepeat(20, 200, () -> Server.asyncPool().execute(this::doChecks));
+		Scheduler.delayedRepeat(20, 200, () -> Server.asyncPool().execute(new AsyncTask() {
+			@Override
+			public void run() {
+				UnionAttachment.this.doChecks();
+			}
+
+			@Override
+			public String name() {
+				return "UnionAttChecks";
+			}
+		}));
 	}
 
 	void doChecks () {
@@ -121,6 +131,11 @@ public class UnionAttachment extends AbstractPlugin<Config> implements EventList
 				public void run() {
 					dataSave.put(name, new DataSave(data));
 					doDataSave(name, data);
+				}
+
+				@Override
+				public String name() {
+					return "UnionAttDataSend";
 				}
 			});
 		}
